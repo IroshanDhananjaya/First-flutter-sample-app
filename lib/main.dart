@@ -3,12 +3,17 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:sample_project/splash.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 void main() {
   runApp(const MyApp());
 }
+
+
+
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -31,12 +36,21 @@ class Splash extends StatefulWidget {
 }
 
 class _SplashState extends State<Splash> {
+
+final getStorage=GetStorage();
+
   @override
   void initState() {
     super.initState();
     Future.delayed(const Duration(seconds: 3), (() {
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => const LoginPage()));
+      if(getStorage.read("id")!=null){
+         Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) =>  HomePage()));
+      }else{
+         Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) =>  LoginPage()));
+      }
+     
     }));
   }
 
@@ -71,7 +85,9 @@ class _SplashState extends State<Splash> {
 }
 
 class LoginPage extends StatelessWidget {
-  const LoginPage({super.key});
+  final getStorage=GetStorage();
+  //const LoginPage({super.key});
+  
 
   @override
   Widget build(BuildContext context) {
@@ -139,10 +155,12 @@ class LoginPage extends StatelessWidget {
                             minimumSize: const Size.fromHeight(50),
                           ),
                           onPressed: () {
+                            getStorage.write("id", "1");
+                            getStorage.write("name", "Iroshan");
                             Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => const HomePage()));
+                                    builder: (context) =>  HomePage()));
                           },
                           child: const Text(
                             'LOGIN',
@@ -159,19 +177,38 @@ class LoginPage extends StatelessWidget {
 }
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
-
+  //const HomePage({super.key});
+  final getStorage=GetStorage();
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
           title: Text("Home Page"),
+          
         ),
-        body:WebView(
-          initialUrl: "https://iroshandhananjaya.netlify.app/",
-          javascriptMode: JavascriptMode.unrestricted,
-        )
+        // body:WebView(
+        //   initialUrl: "https://iroshandhananjaya.netlify.app/",
+        //   javascriptMode: JavascriptMode.unrestricted,
+        //)
+        body:  ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            primary: Color.fromARGB(255, 9, 29, 145),
+                            minimumSize: const Size.fromHeight(50),
+                          ),
+                          onPressed: () {
+                            getStorage.erase();
+                            Navigator.pushReplacement(
+                              
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>  LoginPage()));
+                          },
+                          child: const Text(
+                            'Logout',
+                            style: TextStyle(fontSize: 24),
+                          ),
+                        ),
 
       ),
     );
